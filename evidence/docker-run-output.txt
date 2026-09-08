@@ -1,0 +1,13 @@
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                                     NAMES
+2c202fdef726   tax-calculator   "/docker-entrypoint.…"   5 minutes ago   Up 5 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   tax-calculator
+---
+HTTP/1.1 200 OK
+Server: nginx/1.31.5
+Date: Tue, 08 Sep 2026 06:20:38 GMT
+Content-Type: text/html
+Content-Length: 5599
+Last-Modified: Tue, 08 Sep 2026 06:09:33 GMT
+Connection: keep-alive
+ETag: "6a9fa69d-15df"
+Accept-Ranges: bytes
+

@@ -1,0 +1,3 @@
+REPOSITORY       TAG       IMAGE ID       CREATED         SIZE
+tax-calculator   latest    c8aa4ad34fe1   5 minutes ago   268MB
+nginx            latest    05b8cb60c354   5 days ago      268MB

@@ -1,0 +1,43 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  4.085MB
+Step 1/6 : FROM nginx
+latest: Pulling from library/nginx
+a3d95972273c: Pulling fs layer
+ac3ce1865cbf: Pulling fs layer
+fef72342d9bd: Pulling fs layer
+4225c79b86e9: Pulling fs layer
+dd00b62474a6: Pulling fs layer
+50355e0ebcbc: Pulling fs layer
+bf7af0229701: Pulling fs layer
+fef72342d9bd: Download complete
+dd00b62474a6: Download complete
+a3d95972273c: Download complete
+50355e0ebcbc: Download complete
+4225c79b86e9: Download complete
+ac3ce1865cbf: Download complete
+bf7af0229701: Download complete
+bf7af0229701: Pull complete
+fef72342d9bd: Pull complete
+dd00b62474a6: Pull complete
+50355e0ebcbc: Pull complete
+4225c79b86e9: Pull complete
+ac3ce1865cbf: Pull complete
+a3d95972273c: Pull complete
+Digest: sha256:05b8cb60c354a44ab824ea6e7dc69b46d50762cdbe728a347a5b656e6fb3d7c4
+Status: Downloaded newer image for nginx:latest
+ ---> 05b8cb60c354
+Step 2/6 : COPY favicon.ico /usr/share/nginx/html/favicon.ico
+ ---> f30c57a03336
+Step 3/6 : COPY index.html /usr/share/nginx/html/index.html
+ ---> 89a99043df0b
+Step 4/6 : COPY script.js /usr/share/nginx/html/script.js
+ ---> b646676a5e3f
+Step 5/6 : COPY style.css /usr/share/nginx/html/style.css
+ ---> 3f4ffdbe4c47
+Step 6/6 : COPY taxCalculator.js /usr/share/nginx/html/taxCalculator.js
+ ---> c8aa4ad34fe1
+Successfully built c8aa4ad34fe1
+Successfully tagged tax-calculator:latest
