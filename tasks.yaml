@@ -20,16 +20,9 @@ spec:
         #!/usr/bin/env sh
         set -eu
         echo "Removing all files from ${WORKSPACE_SOURCE_PATH} ..."
-        # Delete any existing contents of the directory if it exists.
-        #
-        # We don't just "rm -rf ${WORKSPACE_SOURCE_PATH}" because ${WORKSPACE_SOURCE_PATH} might be "/"
-        # or the root of a mounted volume.
         if [ -d "${WORKSPACE_SOURCE_PATH}" ] ; then
-          # Delete non-hidden files and directories
           rm -rf "${WORKSPACE_SOURCE_PATH:?}"/*
-          # Delete files and directories starting with . but excluding ..
           rm -rf "${WORKSPACE_SOURCE_PATH}"/.[!.]*
-          # Delete files and directories starting with .. plus any other character
           rm -rf "${WORKSPACE_SOURCE_PATH}"/..?*
         fi
 ---
@@ -47,14 +40,11 @@ spec:
       script: |
         #!/bin/bash
         set -e
-
         echo "***** Environment *****"
         npm --version
         pwd
-
         echo "***** Cleaning npm cache *****"
         npm cache clean --force
-
         echo "***** Running npm install *****"
         npm install
 ---
@@ -72,9 +62,70 @@ spec:
       script: |
         #!/bin/bash
         set -e
-
         echo "***** Running jasminetests *****"
         npx jasmine
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-fix
+spec:
+  description: Rewrites the web image configuration so nginx can run under OpenShift restricted SCC with an arbitrary non-root UID.
+  workspaces:
+    - name: source
+  steps:
+    - name: fix-nginx
+      image: alpine:3
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/bin/sh
+        set -eu
+
+        cat > Dockerfile <<'DOCKERFILE'
+        FROM nginx:alpine
+        COPY nginx.conf /etc/nginx/nginx.conf
+        COPY favicon.ico /usr/share/nginx/html/favicon.ico
+        COPY index.html /usr/share/nginx/html/index.html
+        COPY script.js /usr/share/nginx/html/script.js
+        COPY style.css /usr/share/nginx/html/style.css
+        COPY taxCalculator.js /usr/share/nginx/html/taxCalculator.js
+        EXPOSE 8080
+        DOCKERFILE
+
+        cat > nginx.conf <<'NGINX'
+        pid /tmp/nginx.pid;
+        events {
+          worker_connections 1024;
+        }
+        http {
+          include /etc/nginx/mime.types;
+          default_type application/octet-stream;
+          access_log /dev/stdout;
+          error_log /dev/stderr warn;
+
+          client_body_temp_path /tmp/client_temp;
+          proxy_temp_path /tmp/proxy_temp;
+          fastcgi_temp_path /tmp/fastcgi_temp;
+          uwsgi_temp_path /tmp/uwsgi_temp;
+          scgi_temp_path /tmp/scgi_temp;
+
+          server {
+            listen 8080;
+            listen [::]:8080;
+            root /usr/share/nginx/html;
+            index index.html;
+
+            location / {
+              try_files $uri $uri/ /index.html;
+            }
+          }
+        }
+        NGINX
+
+        echo "***** OpenShift-compatible Dockerfile *****"
+        cat Dockerfile
+        echo "***** OpenShift-compatible nginx.conf *****"
+        cat nginx.conf
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
