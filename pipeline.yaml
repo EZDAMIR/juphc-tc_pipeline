@@ -68,3 +68,14 @@ spec:
           value: "us.icr.io/$(context.pipelineRun.namespace)/$(params.app-name)"
       runAfter:
         - tests
+
+    - name: deploy
+      taskRef:
+        name: deploy
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: image-name
+          value: "us.icr.io/$(context.pipelineRun.namespace)/$(params.app-name)"
+      runAfter:
+        - build

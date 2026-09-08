@@ -75,3 +75,24 @@ spec:
 
         echo "***** Running jasminetests *****"
         npx jasmine
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy
+spec:
+  params:
+    - name: app-name
+      description: The name of the application
+    - name: image-name
+      description: The image to deploy
+  steps:
+    - name: deploy
+      image: quay.io/openshift/origin-cli:latest
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          oc create deployment $(params.app-name) \
+            --image=$(params.image-name) \
+            --dry-run=client -o yaml | oc apply -f -
+          oc rollout status deploy/$(params.app-name)
