@@ -13,7 +13,6 @@ spec:
     - name: branch
       default: main
   tasks:
-
     - name: init
       workspaces:
         - name: source
@@ -54,6 +53,15 @@ spec:
       runAfter:
         - npminstall
 
+    - name: openshift-fix
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: openshift-fix
+      runAfter:
+        - tests
+
     - name: build
       workspaces:
         - name: source
@@ -67,7 +75,7 @@ spec:
         - name: IMAGE
           value: "us.icr.io/$(context.pipelineRun.namespace)/$(params.app-name)"
       runAfter:
-        - tests
+        - openshift-fix
 
     - name: deploy
       taskRef:
